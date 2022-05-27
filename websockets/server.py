@@ -24,12 +24,13 @@ def make_respkey(webkey):
     return ubinascii.b2a_base64(respkey).strip()
 
 
-async def connect(reader, writer, cb):
+async def connect(reader, writer, cb,method=None,uri=None,proto=None):
     webkey = None
 
-    request = await reader.readline()
+    if method == None or uri==None or proto==None:
+        request = await reader.readline()
 
-    method, uri, proto = request.split(b" ")
+        method, uri, proto = request.split(b" ")
     m = re.match(REQ_RE, uri)
     path = m.group(5) if m else "/"
 
@@ -67,3 +68,4 @@ async def serve(cb, host, port):
         await connect(reader, writer, cb)
 
     return await uasyncio.start_server(_connect, host, port)
+
